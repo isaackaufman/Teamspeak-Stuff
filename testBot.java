@@ -26,7 +26,7 @@ public class testBot {
 
 	public testBot() {
 		final TS3Config config = new TS3Config();
-		config.setHost("68.14.146.196");
+		config.setHost("127.0.0.1");
 		config.setDebugLevel(Level.ALL);
 		config.setLoginCredentials("serveradmin", "tester88");
 
