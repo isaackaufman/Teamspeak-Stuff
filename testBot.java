@@ -28,7 +28,7 @@ public class testBot {
 		final TS3Config config = new TS3Config();
 		config.setHost("127.0.0.1");
 		config.setDebugLevel(Level.ALL);
-		config.setLoginCredentials("serveradmin", "tester88");
+		config.setLoginCredentials("serveradmin", "password");
 
 		final TS3Query query = new TS3Query(config);
 		query.connect();
