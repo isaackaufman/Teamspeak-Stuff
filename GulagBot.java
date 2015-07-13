@@ -46,6 +46,7 @@ public class GulagBot {
         query.connect();
         HashMap<ChannelProperty, String> channelProps = new HashMap<>();
         channelProps.put(ChannelProperty.CHANNEL_NEEDED_TALK_POWER, "100");
+        channelProps.put(ChannelProperty.CHANNEL_DESCRIPTION, "The Gulag: For naughty users.")
         final TS3Api api = query.getApi();
         api.selectVirtualServerById(1);
         api.setNickname("GulagBot");
