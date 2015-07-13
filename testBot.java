@@ -36,7 +36,7 @@ public class testBot {
 		final TS3Api api = query.getApi();
 		api.selectVirtualServerById(1);
 		api.setNickname("PutPutBot");
-		final int clientId = api.getClientByName("PutPutBot").get(0).getId();
+		final int clientId = api.whoAmI().getClientId();
 		api.moveClient(8);	
 		api.sendChannelMessage("PutPutBot is online!");
 
