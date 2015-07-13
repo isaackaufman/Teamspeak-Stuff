@@ -40,13 +40,13 @@ public class GulagBot {
         final TS3Config config = new TS3Config();
         config.setHost("127.0.0.1");
         config.setDebugLevel(Level.ALL);
-        config.setLoginCredentials("serveradmin", "password");
+        config.setLoginCredentials("serveradmin", "0t26OH2J");
 
         final TS3Query query = new TS3Query(config);
         query.connect();
         HashMap<ChannelProperty, String> channelProps = new HashMap<>();
         channelProps.put(ChannelProperty.CHANNEL_NEEDED_TALK_POWER, "100");
-        channelProps.put(ChannelProperty.CHANNEL_DESCRIPTION, "The Gulag: For naughty users.")
+        channelProps.put(ChannelProperty.CHANNEL_DESCRIPTION, "The Gulag: For naughty users.");
         final TS3Api api = query.getApi();
         api.selectVirtualServerById(1);
         api.setNickname("GulagBot");
@@ -75,6 +75,7 @@ public class GulagBot {
             }
 
             public void onClientLeave(ClientLeaveEvent e) {
+            	api.sendChannelMessage("Test man");
                 api.moveClient(e.getClientId(), sqi.getChannelId());
                 api.sendChannelMessage("Nice try, " + api.getClientInfo(e.getClientId()).getNickname() + ", but there is no escaping the Gulag!");
             }
