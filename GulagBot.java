@@ -68,14 +68,14 @@ public class GulagBot {
                 if ((e.getClientTargetId() == sqi.getChannelId()) && !(gulagClientUIDpool.contains(api.getClientInfo(e.getClientId()).getBase64ClientUId())))
                 {
                     gulagClientUIDpool.add(api.getClientInfo(e.getClientId()).getBase64ClientUId());
-                    api.sendChannelMessage("Welcome to the Gulag, " + api.getClientInfo(e.getClientId()).getNickname() + "!");
+                    api.sendChannelMessage("Welcome to the Gulag " + api.getClientInfo(e.getClientId()).getNickname() + "!");
                 }
                 else
                 {
                     if (api.getClientInfo(e.getClientId()).getChannelId() != channelId)
                     {
                         api.moveClient(e.getClientId(), sqi.getChannelId());
-                        api.sendChannelMessage("Nice try, " + api.getClientInfo(e.getClientId()).getNickname() + ", but there is no escaping the Gulag!");
+                        api.sendChannelMessage("Nice try " + api.getClientInfo(e.getClientId()).getNickname() + ", but there is no escaping the Gulag!");
                     }
                 }
             }
@@ -98,7 +98,7 @@ public class GulagBot {
                 if (gulagClientUIDpool.contains(api.getClientInfo(e.getClientId()).getBase64ClientUId()))
                 {
                     api.moveClient(e.getClientId(), sqi.getChannelId());
-                    api.sendChannelMessage("Nice try, " + api.getClientInfo(e.getClientId()).getNickname() + ", but there is no escaping the Gulag!");
+                    api.sendChannelMessage("Nice try " + api.getClientInfo(e.getClientId()).getNickname() + ", but there is no escaping the Gulag!");
                 }
             }
 
