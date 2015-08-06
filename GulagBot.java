@@ -25,6 +25,8 @@ import com.github.theholywaffle.teamspeak3.api.event.TS3Listener;
 import com.github.theholywaffle.teamspeak3.api.event.TextMessageEvent;
 import com.github.theholywaffle.teamspeak3.api.wrapper.ServerQueryInfo;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  *
@@ -40,7 +42,7 @@ public class GulagBot {
         final TS3Config config = new TS3Config();
         config.setHost("127.0.0.1");
         config.setDebugLevel(Level.ALL);
-        config.setLoginCredentials("serveradmin", "0t26OH2J");
+        config.setLoginCredentials("serveradmin", "tester88");
 
         final TS3Query query = new TS3Query(config);
         query.connect();
@@ -49,19 +51,33 @@ public class GulagBot {
         channelProps.put(ChannelProperty.CHANNEL_DESCRIPTION, "The Gulag: For naughty users.");
         final TS3Api api = query.getApi();
         api.selectVirtualServerById(1);
-        api.setNickname("GulagBot");
-        
+        api.setNickname("Joseph Stalin");
+
+        api.createChannel("Gulag", channelProps);
+        api.broadcast("The Gulag is now operational.");
+        api.moveClient(api.getChannelByName("Gulag").getId());
         // GulagBot should not change channels, so this is okay for now
         final ServerQueryInfo sqi = api.whoAmI();
         final int clientId = sqi.getId();
-
-        api.createChannel("Gulag", channelProps);
-
+        final int channelId = sqi.getChannelId();
+        final Set<String> gulagClientUIDpool = new HashSet<String>();
         api.registerAllEvents();
         api.addTS3Listeners(new TS3Listener() {
 
             public void onClientMoved(ClientMovedEvent e) {
-                api.sendChannelMessage("Welcome to the Gulag, " + api.getClientInfo(e.getClientId()).getNickname() + "!");
+                if ((e.getClientTargetId() == sqi.getChannelId()) && !(gulagClientUIDpool.contains(api.getClientInfo(e.getClientId()).getBase64ClientUId())))
+                {
+                    gulagClientUIDpool.add(api.getClientInfo(e.getClientId()).getBase64ClientUId());
+                    api.sendChannelMessage("Welcome to the Gulag, " + api.getClientInfo(e.getClientId()).getNickname() + "!");
+                }
+                else
+                {
+                    if (api.getClientInfo(e.getClientId()).getChannelId() != channelId)
+                    {
+                        api.moveClient(e.getClientId(), sqi.getChannelId());
+                        api.sendChannelMessage("Nice try, " + api.getClientInfo(e.getClientId()).getNickname() + ", but there is no escaping the Gulag!");
+                    }
+                }
             }
 
             public void onTextMessage(TextMessageEvent e) {
@@ -75,12 +91,15 @@ public class GulagBot {
             }
 
             public void onClientLeave(ClientLeaveEvent e) {
-            	api.sendChannelMessage("Test man");
-                api.moveClient(e.getClientId(), sqi.getChannelId());
-                api.sendChannelMessage("Nice try, " + api.getClientInfo(e.getClientId()).getNickname() + ", but there is no escaping the Gulag!");
+                
             }
 
             public void onClientJoin(ClientJoinEvent e) {
+                if (gulagClientUIDpool.contains(api.getClientInfo(e.getClientId()).getBase64ClientUId()))
+                {
+                    api.moveClient(e.getClientId(), sqi.getChannelId());
+                    api.sendChannelMessage("Nice try, " + api.getClientInfo(e.getClientId()).getNickname() + ", but there is no escaping the Gulag!");
+                }
             }
 
             public void onChannelEdit(ChannelEditedEvent e) {
