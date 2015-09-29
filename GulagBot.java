@@ -42,36 +42,45 @@ public class GulagBot {
         final TS3Config config = new TS3Config();
         config.setHost("127.0.0.1");
         config.setDebugLevel(Level.ALL);
-        config.setLoginCredentials("serveradmin", "tester88");
+        config.setLoginCredentials("serveradmin", "serveradminpassword");
 
         final TS3Query query = new TS3Query(config);
         query.connect();
+        
+        // create the gulag channel
         HashMap<ChannelProperty, String> channelProps = new HashMap<>();
         channelProps.put(ChannelProperty.CHANNEL_NEEDED_TALK_POWER, "100");
         channelProps.put(ChannelProperty.CHANNEL_DESCRIPTION, "The Gulag: For naughty users.");
-        final TS3Api api = query.getApi();
-        api.selectVirtualServerById(1);
         api.setNickname("Joseph Stalin");
-
         api.createChannel("Gulag", channelProps);
+        final TS3Api api = query.getApi();
+        
+        api.selectVirtualServerById(1);
         api.broadcast("The Gulag is now operational.");
         api.moveClient(api.getChannelByName("Gulag").getId());
-        // GulagBot should not change channels, so this is okay for now
+        
+        // GulagBot should not change channels, so grab a ServerQueryInfo to use indefinitely
         final ServerQueryInfo sqi = api.whoAmI();
         final int clientId = sqi.getId();
         final int channelId = sqi.getChannelId();
+        
+        // create a set of users (by UID) who should be in the gulag
         final Set<String> gulagClientUIDpool = new HashSet<String>();
         api.registerAllEvents();
         api.addTS3Listeners(new TS3Listener() {
 
             public void onClientMoved(ClientMovedEvent e) {
+                // if it's a user's first time in the gulag
                 if ((e.getClientTargetId() == sqi.getChannelId()) && !(gulagClientUIDpool.contains(api.getClientInfo(e.getClientId()).getBase64ClientUId())))
                 {
                     gulagClientUIDpool.add(api.getClientInfo(e.getClientId()).getBase64ClientUId());
                     api.sendChannelMessage("Welcome to the Gulag " + api.getClientInfo(e.getClientId()).getNickname() + "!");
                 }
+                // if the user is in the set and therefor has been introduced to the Gulag, don't display a welcome message
                 else
                 {
+                    // move user back in if they try to leave
+                    // TODO - make it so a user can be moved out by an admin and wiped from the Gulag set
                     if (api.getClientInfo(e.getClientId()).getChannelId() != channelId)
                     {
                         api.moveClient(e.getClientId(), sqi.getChannelId());
@@ -81,6 +90,7 @@ public class GulagBot {
             }
 
             public void onTextMessage(TextMessageEvent e) {
+                // no one but the bot may speak in the gulag
                 if (e.getTargetMode() == TextMessageTargetMode.CHANNEL && e.getInvokerId() != clientId) {
                     api.sendChannelMessage("Quiet in the Gulag!");
                 }
@@ -95,6 +105,7 @@ public class GulagBot {
             }
 
             public void onClientJoin(ClientJoinEvent e) {
+                // even if a gulag'd user disconnects and reconnects, don't let them escape
                 if (gulagClientUIDpool.contains(api.getClientInfo(e.getClientId()).getBase64ClientUId()))
                 {
                     api.moveClient(e.getClientId(), sqi.getChannelId());
@@ -106,8 +117,8 @@ public class GulagBot {
 
             }
 
-            public void onChannelDescriptionChanged(
-                    ChannelDescriptionEditedEvent e) {
+            public void onChannelDescriptionChanged(ChannelDescriptionEditedEvent e) {
+                
             }
 
             public void onChannelCreate(ChannelCreateEvent e) {
